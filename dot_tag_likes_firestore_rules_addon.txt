@@ -1,0 +1,14 @@
+// Add this nested match INSIDE your existing match /posts/{postId} block, before its closing brace.
+match /likes/{userId} {
+  allow read: if request.auth != null;
+  allow create: if request.auth != null
+    && request.auth.uid == userId
+    && request.resource.data.keys().hasOnly(['userId', 'createdAt'])
+    && request.resource.data.keys().hasAll(['userId', 'createdAt'])
+    && request.resource.data.userId == request.auth.uid
+    && request.resource.data.createdAt == request.time;
+  allow update: if false;
+  allow delete: if request.auth != null
+    && request.auth.uid == userId
+    && resource.data.userId == request.auth.uid;
+}
